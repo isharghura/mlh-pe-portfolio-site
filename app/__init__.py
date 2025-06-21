@@ -54,3 +54,13 @@ def work():
         },
     ]
     return render_template("work.html", jobs=work_experiences)
+
+
+@app.route("/hobbies")
+def hobbies():
+    hobbies = [
+        {"name": "Chess", "image": "chess.png"},
+        {"name": "Guitar", "image": "telecaster.webp"},
+        {"name": "Bouldering", "image": "bouldering.jpg"},
+    ]
+    return render_template("hobbies.html", hobbies=hobbies)
