@@ -79,3 +79,22 @@ def education():
         },
     ]
     return render_template("education.html", education=education)
+
+@app.route("/travel")
+def travel():
+    locations = [
+        {"name": "Paris, France", "lat": 48.8566, "lng": 2.3522},
+        {"name": "New York, USA", "lat": 40.7128, "lng": -74.0060},
+        {"name": "Vancouver, Canada", "lat": 49.2827, "lng": -123.1207},
+        {"name": "Ottawa, Canada", "lat": 45.4215, "lng": -75.6972},
+        {"name": "Toronto, Canada", "lat": 43.6532, "lng": -79.3832},
+        {"name": "New Delhi, India", "lat": 28.6139, "lng": 77.2090},
+        {"name": "Manchester, UK", "lat": 53.4808, "lng": -2.2426},
+        {"name": "Newcastle, UK", "lat": 54.9783, "lng": -1.6178},
+        {"name": "Glasgow, Scotland", "lat": 55.8642, "lng": -4.2518},
+        {"name": "Rome, Italy", "lat": 41.9028, "lng": 12.4964},
+        {"name": "San Francisco, USA", "lat": 37.7749, "lng": -122.4194},
+        {"name": "Seattle, Washington, USA", "lat": 47.6062, "lng": -122.3321},
+        {"name": "Hawaii, USA", "lat": 19.8968, "lng": -155.5828}
+    ]
+    return render_template("travel.html", locations=locations)
