@@ -12,7 +12,7 @@ h1 {
     margin-bottom: 30px;
 }
 
-.job-entry {
+.entry {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
@@ -21,11 +21,11 @@ h1 {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.job-entry strong {
+.entry strong {
     color: #0056b3;
 }
 
-.job-entry span {
+.entry span {
     display: block;
     margin-top: 5px;
     font-size: 0.95em;

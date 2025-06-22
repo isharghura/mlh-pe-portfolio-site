@@ -19,12 +19,12 @@
     {% extends "base.html" %}
     {% block content %}
 
-    <h1>My work experience</h1>
+    <h1>My education</h1>
 
-    {% for job in jobs %}
+    {% for edu in education %}
     <div class="entry">
-        <strong>{{ job.company }}</strong>, {{ job.role }}
-        <span>{{ job.date }}</span>
+        <strong>{{ edu.school }}</strong>
+        <span>{{ edu.date }}</span>
     </div>
     {% endfor %}
 

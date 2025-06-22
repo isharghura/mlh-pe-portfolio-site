@@ -64,3 +64,18 @@ def hobbies():
         {"name": "Bouldering", "image": "bouldering.jpg"},
     ]
     return render_template("hobbies.html", hobbies=hobbies)
+
+
+@app.route("/education")
+def education():
+    education = [
+        {
+            "school": "Carleton University",
+            "date": "2022 - 2027",
+        },
+        {
+            "school": "Oakville Trafalgar High School",
+            "date": "2018 - 2022",
+        },
+    ]
+    return render_template("education.html", education=education)
