@@ -18,12 +18,14 @@ echo "installing requirements"
 pip install -r requirements.txt
 
 echo "starting tmux session"
-TMUX_COMMAND="cd \"${PROJECT_DIR}\" && \
-              source python3-virtualenv/bin/activate && \
-              export FLASK_APP=app.py && \
-              export FLASK_ENV=production && \
-              exec flask run --host=0.0.0.0 --port=5000"
+COMMAND_TO_RUN="
+cd '${PROJECT_DIR}' &&
+source python3-virtualenv/bin/activate &&
+export FLASK_APP=app.py &&
+export FLASK_ENV=production &&
+exec flask run --host=0.0.0.0 --port=5000
+"
               
-tmux new-session -d -s flask-site "${TMUX_COMMAND}"
+tmux new-session -d -s flask-site "bash -c \"${COMMAND_TO_RUN}\""
 
 echo "deployment complete, flask server is running"
