@@ -1,19 +1,24 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
-# from peewee import *
+from peewee import *
 import os
 
 load_dotenv()
 app = Flask(__name__)
 
-# mydb =
-# MySQLDatabase(os.getenv("MYSQL_DATABASE"),
-#     user=os.getenv("MYSQL_USER"),
-#     password=os.getenv("MYSQL_PASSWORD"),
-#     host=os.getenv("MYSQL_HOST"),
-#     port=3306
-# )
-# print(mydb)
+print("Checking environment variables:")
+print(f"MYSQL_DATABASE: {os.getenv('MYSQL_DATABASE')}")
+print(f"MYSQL_USER: {os.getenv('MYSQL_USER')}")
+print(f"MYSQL_HOST: {os.getenv('MYSQL_HOST')}")
+
+mydb =
+MySQLDatabase(os.getenv("MYSQL_DATABASE"),
+    user=os.getenv("MYSQL_USER"),
+    password=os.getenv("MYSQL_PASSWORD"),
+    host=os.getenv("MYSQL_HOST"),
+    port=3306
+)
+print(mydb)
 
 # define nav items
 nav_items = [
