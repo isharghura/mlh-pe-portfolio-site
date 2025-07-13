@@ -1,5 +1,5 @@
 #!/bin/bash
--set e
+set e
 
 PROJECT_DIR="/root/mlh-pe-portfolio-site"
 
