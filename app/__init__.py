@@ -8,7 +8,13 @@ from playhouse.shortcuts import model_to_dict
 load_dotenv()
 app = Flask(__name__)
 
-print(os.getenv("MYSQL_DATABASE"))
+# Debug: Print loaded environment variables
+print("Environment variables loaded:")
+print(f"MYSQL_DATABASE: {os.getenv('MYSQL_DATABASE')}")
+print(f"MYSQL_USER: {os.getenv('MYSQL_USER')}")
+print(f"MYSQL_PASSWORD: {os.getenv('MYSQL_PASSWORD')}")
+print(f"MYSQL_HOST: {os.getenv('MYSQL_HOST')}")
+print(f"URL: {os.getenv('URL')}")
 
 mydb = MySQLDatabase(
     os.getenv("MYSQL_DATABASE"),
@@ -17,6 +23,7 @@ mydb = MySQLDatabase(
     host=os.getenv("MYSQL_HOST"),
     port=3306,
 )
+print(mydb)
 
 
 class TimelinePost(Model):
@@ -32,25 +39,13 @@ class TimelinePost(Model):
 # Initialize database connection properly
 def init_db():
     try:
-        print("Attempting to connect to database...")
         if not mydb.is_closed():
             mydb.close()
         mydb.connect()
-        print("Database connected successfully!")
-
-        # Test the connection
-        cursor = mydb.execute_sql("SELECT 1")
-        print("Database connection test successful!")
-
         mydb.create_tables([TimelinePost])
-        print("Tables created successfully!")
-
+        print("Database connected and tables created successfully")
     except Exception as e:
         print(f"Database initialization error: {e}")
-        print(f"Error type: {type(e)}")
-        import traceback
-
-        traceback.print_exc()
         raise
 
 
@@ -58,6 +53,10 @@ def init_db():
 @app.before_first_request
 def initialize_database():
     init_db()
+
+
+# Remove this duplicate line - it's already handled in init_db()
+# mydb.create_tables([TimelinePost])
 
 # define nav items
 nav_items = [
@@ -175,8 +174,11 @@ def get_time_line_post():
     }
 
 
-# Ensure database connection is closed when app shuts down
 @app.teardown_appcontext
 def close_database(error):
     if not mydb.is_closed():
         mydb.close()
+
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)  # Listen on all interfaces
