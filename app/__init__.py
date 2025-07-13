@@ -11,8 +11,8 @@ print(f"MYSQL_DATABASE: {os.getenv('MYSQL_DATABASE')}")
 print(f"MYSQL_USER: {os.getenv('MYSQL_USER')}")
 print(f"MYSQL_HOST: {os.getenv('MYSQL_HOST')}")
 
-mydb =
-MySQLDatabase(os.getenv("MYSQL_DATABASE"),
+mydb = MySQLDatabase(
+    os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
     host=os.getenv("MYSQL_HOST"),
