@@ -4,7 +4,7 @@ set e
 PROJECT_DIR="/root/mlh-pe-portfolio-site"
 
 echo "killing all tmux sessions"
-tmux kill-server
+tmux kill-server || true
 
 echo "changing directory to project folder"
 cd "${PROJECT_DIR}"
