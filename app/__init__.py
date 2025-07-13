@@ -9,7 +9,7 @@ load_dotenv()
 app = Flask(__name__)
 
 print(os.getenv("MYSQL_DATABASE"))
-      
+
 mydb = MySQLDatabase(
     os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
@@ -27,7 +27,26 @@ class TimelinePost(Model):
     class Meta:
         database = mydb
 
-mydb.connect()
+
+# Initialize database connection properly
+def init_db():
+    try:
+        if not mydb.is_closed():
+            mydb.close()
+        mydb.connect()
+        mydb.create_tables([TimelinePost])
+        print("Database connected and tables created successfully")
+    except Exception as e:
+        print(f"Database initialization error: {e}")
+        raise
+
+
+# Initialize database when app starts
+@app.before_first_request
+def initialize_database():
+    init_db()
+
+
 mydb.create_tables([TimelinePost])
 
 # define nav items
@@ -142,3 +161,9 @@ def get_time_line_post():
 TimelinePost.select().order_by(TimelinePost.created_at.desc())
         ]
     }
+
+
+@app.teardown_appcontext
+def close_database(error):
+    if not mydb.is_closed():
+        mydb.close()
