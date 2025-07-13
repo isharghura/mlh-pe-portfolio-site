@@ -1,5 +1,5 @@
 #!/bin/bash
-set e
+set -e
 
 PROJECT_DIR="/root/mlh-pe-portfolio-site"
 
@@ -20,13 +20,13 @@ pip install -r requirements.txt
 
 echo "start tmux session"
 
-COMMAND_TO_RUN="
-cd '${PROJECT_DIR}' &&
-source python3-virtualenv/bin/activate &&
-export FLASK_APP=app.py &&
-export FLASK_ENV=production &&
-exec flask run --host=0.0.0.0 --port=5000
-"
-tmux new-session -d -s flask-site "bash -c \"${COMMAND_TO_RUN}\""
+tmux new-session -d -s flask-site "bash -c \"
+cd '${PROJECT_DIR}' && \
+source python3-virtualenv/bin/activate && \
+export FLASK_APP=app.py && \
+export FLASK_ENV=production && \
+while true; do flask run --host=0.0.0.0 --port=5000; sleep 1; done
+\""
 
-echo "deployment complete"
+echo "tmux session created. Attach with: tmux attach -t flask-site"
+echo "Deployment complete"
