@@ -45,9 +45,6 @@ def init_db():
 def initialize_database():
     init_db()
 
-
-mydb.create_tables([TimelinePost])
-
 # define nav items
 nav_items = [
     {"name": "Home", "url": "/"},
