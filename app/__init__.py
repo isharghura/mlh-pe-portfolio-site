@@ -66,6 +66,7 @@ nav_items = [
     {"name": "Hobbies", "url": "/hobbies"},
     {"name": "Education", "url": "/education"},
     {"name": "Travel", "url": "/travel"},
+    {"name": "Timeline", "url": "/timeline"},
 ]
 
 
