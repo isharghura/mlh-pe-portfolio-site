@@ -8,14 +8,16 @@ from playhouse.shortcuts import model_to_dict
 load_dotenv()
 app = Flask(__name__)
 
+print(os.getenv("MYSQL_DATABASE"))
+
 mydb = MySQLDatabase(
     os.getenv("MYSQL_DATABASE"),
     user=os.getenv("MYSQL_USER"),
     password=os.getenv("MYSQL_PASSWORD"),
     host=os.getenv("MYSQL_HOST"),
-    port=3306
+    port=3306,
 )
-print(mydb)
+
 
 class TimelinePost(Model):
     name = CharField()
@@ -30,13 +32,25 @@ class TimelinePost(Model):
 # Initialize database connection properly
 def init_db():
     try:
+        print("Attempting to connect to database...")
         if not mydb.is_closed():
             mydb.close()
         mydb.connect()
+        print("Database connected successfully!")
+
+        # Test the connection
+        cursor = mydb.execute_sql("SELECT 1")
+        print("Database connection test successful!")
+
         mydb.create_tables([TimelinePost])
-        print("Database connected and tables created successfully")
+        print("Tables created successfully!")
+
     except Exception as e:
         print(f"Database initialization error: {e}")
+        print(f"Error type: {type(e)}")
+        import traceback
+
+        traceback.print_exc()
         raise
 
 
@@ -120,6 +134,7 @@ def education():
     ]
     return render_template("education.html", education=education)
 
+
 @app.route("/travel")
 def travel():
     locations = [
@@ -135,30 +150,32 @@ def travel():
         {"name": "Rome, Italy", "lat": 41.9028, "lng": 12.4964},
         {"name": "San Francisco, USA", "lat": 37.7749, "lng": -122.4194},
         {"name": "Seattle, Washington, USA", "lat": 47.6062, "lng": -122.3321},
-        {"name": "Hawaii, USA", "lat": 19.8968, "lng": -155.5828}
+        {"name": "Hawaii, USA", "lat": 19.8968, "lng": -155.5828},
     ]
     return render_template("travel.html", locations=locations)
 
-@app.route('/api/timeline_post', methods=['POST'])
+
+@app.route("/api/timeline_post", methods=["POST"])
 def post_time_line_post():
-    name = request.form['name']
-    email = request.form['email']
-    content = request.form['content']
+    name = request.form["name"]
+    email = request.form["email"]
+    content = request.form["content"]
     timeline_post = TimelinePost.create(name=name, email=email, content=content)
 
     return model_to_dict(timeline_post)
 
-@app.route('/api/timeline_post', methods=['GET'])
+
+@app.route("/api/timeline_post", methods=["GET"])
 def get_time_line_post():
     return {
-        'timeline_posts': [
+        "timeline_posts": [
             model_to_dict(p)
-            for p in
-TimelinePost.select().order_by(TimelinePost.created_at.desc())
+            for p in TimelinePost.select().order_by(TimelinePost.created_at.desc())
         ]
     }
 
 
+# Ensure database connection is closed when app shuts down
 @app.teardown_appcontext
 def close_database(error):
     if not mydb.is_closed():
