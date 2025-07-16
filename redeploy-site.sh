@@ -22,4 +22,3 @@ echo "Checking service status"
 sudo systemctl status myportfolio --no-pager
 
 echo "Deployment complete"
-echo "Your portfolio site should now be running with the latest changes"
