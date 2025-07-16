@@ -8,7 +8,6 @@ from playhouse.shortcuts import model_to_dict
 load_dotenv()
 app = Flask(__name__)
 
-# Debug: Print loaded environment variables
 print("Environment variables loaded:")
 print(f"MYSQL_DATABASE: {os.getenv('MYSQL_DATABASE')}")
 print(f"MYSQL_USER: {os.getenv('MYSQL_USER')}")
@@ -36,7 +35,7 @@ class TimelinePost(Model):
         database = mydb
 
 
-# Initialize database connection properly
+# init database connection properly
 def init_db():
     try:
         if not mydb.is_closed():
@@ -49,14 +48,10 @@ def init_db():
         raise
 
 
-# Initialize database when app starts
+# init db when app starts
 @app.before_first_request
 def initialize_database():
     init_db()
-
-
-# Remove this duplicate line - it's already handled in init_db()
-# mydb.create_tables([TimelinePost])
 
 # define nav items
 nav_items = [
@@ -186,4 +181,4 @@ def close_database(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)  # Listen on all interfaces
+    app.run(debug=True, host="0.0.0.0", port=5000)
