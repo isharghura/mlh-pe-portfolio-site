@@ -2,35 +2,12 @@ import unittest
 import os
 
 os.environ["TESTING"] = "true"
-from app import app, init_db, mydb, TimelinePost
+from app import app, mydb, TimelinePost
 
 
 class AppTestCase(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
-        # Ensure database is properly initialized for each test
-        try:
-            # Close any existing connection
-            if not mydb.is_closed():
-                mydb.close()
-            # Connect and create tables
-            mydb.connect()
-            mydb.create_tables([TimelinePost], safe=True)
-            print("Database connected and tables created successfully")
-        except Exception as e:
-            print(f"Database setup error: {e}")
-            raise
-
-    def tearDown(self):
-        # Clean up database after each test
-        try:
-            # Drop all tables to ensure clean state
-            mydb.drop_tables([TimelinePost], safe=True)
-            # Close connection
-            if not mydb.is_closed():
-                mydb.close()
-        except Exception as e:
-            print(f"Database teardown error: {e}")
 
     def test_home(self):
         response = self.client.get("/")
@@ -97,6 +74,55 @@ class AppTestCase(unittest.TestCase):
         assert created_post["email"] == post_data["email"]
         assert created_post["content"] == post_data["content"]
 
+    def test_timeline_multiple_posts(self):
+        # Create first post
+        post1_data = {
+            "name": "User 1",
+            "email": "user1@example.com",
+            "content": "First post",
+        }
+        response1 = self.client.post("/api/timeline_post", data=post1_data)
+        assert response1.status_code == 200
+
+        # Create second post
+        post2_data = {
+            "name": "User 2",
+            "email": "user2@example.com",
+            "content": "Second post",
+        }
+        response2 = self.client.post("/api/timeline_post", data=post2_data)
+        assert response2.status_code == 200
+
+        # Create third post
+        post3_data = {
+            "name": "User 3",
+            "email": "user3@example.com",
+            "content": "Third post",
+        }
+        response3 = self.client.post("/api/timeline_post", data=post3_data)
+        assert response3.status_code == 200
+
+        # Get all posts
+        response = self.client.get("/api/timeline_post")
+        assert response.status_code == 200
+        assert response.is_json
+
+        json = response.get_json()
+        assert "timeline_posts" in json
+        assert len(json["timeline_posts"]) == 3
+
+        # Verify all posts are present
+        posts = json["timeline_posts"]
+        names = [post["name"] for post in posts]
+        assert "User 1" in names
+        assert "User 2" in names
+        assert "User 3" in names
+
+        # Verify posts are ordered by created_at desc (newest first)
+        assert posts[0]["name"] == "User 3"  # Most recent
+        assert posts[1]["name"] == "User 2"  # Middle
+        assert posts[2]["name"] == "User 1"  # Oldest
+
     def test_timeline_page(self):
         """Test the timeline page rendering"""
         response = self.client.get("/timeline")
@@ -133,3 +159,35 @@ class AppTestCase(unittest.TestCase):
         # Test posts container
         assert 'id="posts"' in html
         assert "Loading..." in html
+
+    def test_malformed_timeline_post(self):
+        # POST request missing name
+        response = self.client.post(
+            "/api/timeline_post",
+            data={"email": "john@example.com", "content": "Hello world, I'm John!"},
+        )
+        assert response.status_code == 400
+        html = response.get_data(as_text=True)
+        assert "Invalid name" in html
+
+        # POST request with empty content
+        response = self.client.post(
+            "/api/timeline_post",
+            data={"name": "John Doe", "email": "john@example.com", "content": ""},
+        )
+        assert response.status_code == 400
+        html = response.get_data(as_text=True)
+        assert "Invalid content" in html
+
+        # POST request with malformed email
+        response = self.client.post(
+            "/api/timeline_post",
+            data={
+                "name": "John Doe",
+                "email": "not-an-email",
+                "content": "Hello world, I'm John!",
+            },
+        )
+        assert response.status_code == 400
+        html = response.get_data(as_text=True)
+        assert "Invalid email" in html
