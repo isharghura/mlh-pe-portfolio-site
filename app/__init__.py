@@ -15,14 +15,16 @@ print(f"MYSQL_PASSWORD: {os.getenv('MYSQL_PASSWORD')}")
 print(f"MYSQL_HOST: {os.getenv('MYSQL_HOST')}")
 print(f"URL: {os.getenv('URL')}")
 
-mydb = MySQLDatabase(
-    os.getenv("MYSQL_DATABASE"),
-    user=os.getenv("MYSQL_USER"),
-    password=os.getenv("MYSQL_PASSWORD"),
-    host=os.getenv("MYSQL_HOST"),
-    port=3306,
-)
-print(mydb)
+if os.getenv("TESTING") == "true":
+    mydb = SqliteDatabase("file:memory?mode=memory&cache=shared", uri=True)
+else:
+    mydb = MySQLDatabase(
+        os.getenv("MYSQL_DATABASE"),
+        user=os.getenv("MYSQL_USER"),
+        password=os.getenv("MYSQL_PASSWORD"),
+        host=os.getenv("MYSQL_HOST"),
+        port=3306,
+    )
 
 
 class TimelinePost(Model):
@@ -35,23 +37,8 @@ class TimelinePost(Model):
         database = mydb
 
 
-# init database connection properly
-def init_db():
-    try:
-        if not mydb.is_closed():
-            mydb.close()
-        mydb.connect()
-        mydb.create_tables([TimelinePost])
-        print("Database connected and tables created successfully")
-    except Exception as e:
-        print(f"Database initialization error: {e}")
-        raise
-
-
-# init db when app starts
-@app.before_first_request
-def initialize_database():
-    init_db()
+mydb.connect()
+mydb.create_tables([TimelinePost])
 
 # define nav items
 nav_items = [
@@ -152,11 +139,19 @@ def travel():
 
 @app.route("/api/timeline_post", methods=["POST"])
 def post_time_line_post():
-    name = request.form["name"]
-    email = request.form["email"]
-    content = request.form["content"]
-    timeline_post = TimelinePost.create(name=name, email=email, content=content)
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip()
+    content = request.form.get("content", "").strip()
 
+    # Validation
+    if not name:
+        return "Invalid name", 400
+    if not content:
+        return "Invalid content", 400
+    if not email or ("@" not in email or "." not in email):
+        return "Invalid email", 400
+
+    timeline_post = TimelinePost.create(name=name, email=email, content=content)
     return model_to_dict(timeline_post)
 
 
@@ -168,17 +163,8 @@ def get_time_line_post():
             for p in TimelinePost.select().order_by(TimelinePost.created_at.desc())
         ]
     }
-    
-@app.route('/timeline')
+
+
+@app.route("/timeline")
 def timeline():
-    return render_template('timeline.html', title="Timeline")
-
-
-@app.teardown_appcontext
-def close_database(error):
-    if not mydb.is_closed():
-        mydb.close()
-
-
-if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    return render_template("timeline.html", title="Timeline")
