@@ -9,16 +9,10 @@ cd "${PROJECT_DIR}"
 echo "Fetching latest changes from GitHub"
 git fetch && git reset origin/main --hard
 
-echo "Activating virtual environment"
-source python3-virtualenv/bin/activate
+echo "Spinning down containers to prevent memory issues"
+docker compose -f docker-compose.prod.yml down
 
-echo "Installing requirements"
-pip install -r requirements.txt
-
-echo "Restarting myportfolio service"
-sudo systemctl restart myportfolio
-
-echo "Checking service status"
-sudo systemctl status myportfolio --no-pager
+echo "Building and starting containers"
+docker compose -f docker-compose.prod.yml up -d --build
 
 echo "Deployment complete"
