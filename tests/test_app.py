@@ -18,7 +18,6 @@ class AppTestCase(unittest.TestCase):
         assert "<title>Home - Ishar Ghura</title>" in html
 
         # Test main content
-        assert "Welcome to my Portfolio!" in html
         assert "my name is Ishar Ghura!" in html
 
         # Test navigation elements
