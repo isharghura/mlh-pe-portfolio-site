@@ -98,6 +98,7 @@ def hobbies():
         {"name": "Chess", "image": "chess.png"},
         {"name": "Guitar", "image": "telecaster.webp"},
         {"name": "Bouldering", "image": "bouldering.jpg"},
+        {"name": "Meeting new people", "image": "handshake.jpg"},
     ]
     return render_template("hobbies.html", hobbies=hobbies)
 
