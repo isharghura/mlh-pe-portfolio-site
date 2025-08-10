@@ -28,5 +28,20 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_IP: ${{ secrets.SSH_IP }}
 
-      - name: Print project root directory
-        run: ssh my-vps 'cd ${{ secrets.PROJECT_ROOT }} && pwd'
+      - name: Debug SSH Connection
+        run: |
+            echo "=== 🔹 SSH Config ==="
+            cat ~/.ssh/config
+
+            echo "=== 🔹 Private Key (first/last lines) ==="
+            head -3 ~/.ssh/deploy-key.pem
+            tail -3 ~/.ssh/deploy-key.pem
+
+            echo "=== 🔹 Key Permissions ==="
+            ls -la ~/.ssh/
+
+            echo "=== 🔹 Attempting SSH (verbose) ==="
+            ssh -v -o IdentitiesOnly=yes my-vps 'pwd'
+        env:
+            SSH_USER: ${{ secrets.SSH_USER }}
+            SSH_IP: ${{ secrets.SSH_IP }}
